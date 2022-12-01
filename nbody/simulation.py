@@ -280,17 +280,19 @@ class NbodySimulation:
                     
                     # savefig
                     scale = 60
-                    pos = particles.get_positions()
-                    plt.scatter(pos[:, 0], pos[:, 1], s = 10, alpha = .3)
-                    plt.title(f'Time = {np.round(t, 0)}')
-                    fig = f'{io_folder_fig}/fig_{self.io_title}_{str(int(0.01 * n)).zfill(1)}.png'
-                    ax = plt.gca()
+                    fig, ax = plt.subplots()
+                    fig.set_size_inches(10.5, 10.5, forward=True)
+                    fig.set_dpi(72)
                     ax.set_xlim(-1*scale,1*scale)
                     ax.set_ylim(-1*scale,1*scale)
                     ax.set_aspect('equal')
                     ax.set_xlabel('X [code unit]')
                     ax.set_ylabel('Y [code unit]')
-                    plt.savefig(fig)
+                    pos = particles.get_positions()
+                    plt.title(f'Time = {np.round(t, 0)}')
+                    FIG = f'{io_folder_fig}/fig_{self.io_title}_{str(int(0.01 * n)).zfill(1)}.png'
+                    ax.scatter(pos[:, 0], pos[:, 1], s = 10, alpha = .3)
+                    plt.savefig(FIG)
                     plt.show()
             
             # update time
@@ -315,8 +317,8 @@ class NbodySimulation:
         posz = pos[:, 2]
         N = self.nparticles
         
-        # return ACC_jit(N, posx, posy, posz, G, mass)
-        return ACC_njit(N, posx, posy, posz, G, mass, rsoft)
+        return ACC_jit(N, posx, posy, posz, G, mass,rsoft)
+        # return ACC_njit(N, posx, posy, posz, G, mass, rsoft)
 
     def _update_particles_euler(self, dt, particles:Particles):
         # TODO:
