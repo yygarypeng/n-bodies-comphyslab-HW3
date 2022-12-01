@@ -2,7 +2,7 @@ import numpy as np
 from pathlib import Path
 import time
 from numba import jit, njit, prange, set_num_threads
-from nbody.particles import Particles
+from nbody.particles import Particles 
 import matplotlib.pyplot as plt
 
 """
@@ -54,7 +54,7 @@ For the course, computational physics lab
 
 """
 
-def ACC_norm(N, posx, posy, posz, G, mass, rsoft):
+def ACC_norm(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
     '''
     Acceleration with normal for loops.
     
@@ -65,6 +65,7 @@ def ACC_norm(N, posx, posy, posz, G, mass, rsoft):
     :param G: gravitational constant
     :param mass: mass
     '''
+    
     acc = np.zeros((N, 3))
     for i in range(N):
         for j in range(N):
@@ -76,9 +77,6 @@ def ACC_norm(N, posx, posy, posz, G, mass, rsoft):
                 theta = np.arccos(z / r)
                 phi = np.arctan2(y, x)
                 F = - G * mass[i, 0] * mass[j, 0] / np.square(r)
-                # Fx = F * np.cos(phi)
-                # Fy = F * np.sin(phi)
-                # Fz = 0
                 Fx = F * np.cos(theta) * np.cos(phi)
                 Fy = F * np.cos(theta) * np.sin(phi)
                 Fz = F * np.sin(theta)
@@ -91,10 +89,14 @@ def ACC_norm(N, posx, posy, posz, G, mass, rsoft):
                 
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
-    return acc
+                
+                U[i] = -G * mass[i, 0] * mass[j, 0] / r
+                K[i] = 0.5 * mass[i, 0] * np.sum(vel_square[i, :])
+                K[j] = 0.5 * mass[j, 0] * np.sum(vel_square[j, :])
+    return acc, U, K
 
 @jit(nopython=True)
-def ACC_jit(N, posx, posy, posz, G, mass, rsoft):
+def ACC_jit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
     '''
     Acceleration with numba jit for loops
     
@@ -129,11 +131,14 @@ def ACC_jit(N, posx, posy, posz, G, mass, rsoft):
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
                 
-    return acc
+                U[i] = -G * mass[i, 0] * mass[j, 0] / r
+                K[i] = 0.5 * mass[i, 0] * np.sum(vel_square[i, :])
+                K[j] = 0.5 * mass[j, 0] * np.sum(vel_square[j, :])
+    return acc, U, K
 
 set_num_threads(8)
 @njit(parallel=True)
-def ACC_njit(N, posx, posy, posz, G, mass, rsoft):
+def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
     '''
     Acceleration with numba njit for loops (parallel)
     
@@ -167,7 +172,11 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft):
                 
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
-    return acc
+                
+                U[i] = -G * mass[i, 0] * mass[j, 0] / r
+                K[i] = 0.5 * mass[i, 0] * np.sum(vel_square[i, :])
+                K[j] = 0.5 * mass[j, 0] * np.sum(vel_square[j, :])
+    return acc, U, K
 
 class NbodySimulation:
     """
@@ -198,7 +207,7 @@ class NbodySimulation:
 
     def setup(self, G=1, 
                     rsoft=0.01, 
-                    method="Euler", 
+                    method="RK2", 
                     io_freq=10, 
                     io_title="particles",
                     io_screen=True,
@@ -244,7 +253,9 @@ class NbodySimulation:
         elif method=="RK2":
             _update_particles = self._update_particles_rk2
         elif method=="RK4":
-            _update_particles = self._update_particles_rk4    
+            _update_particles = self._update_particles_rk4   
+        elif method=="Leapfrog":
+            _update_particles = self._update_particles_lf
         else:
             print("No such update meothd", method)
             quit() 
@@ -264,11 +275,18 @@ class NbodySimulation:
         # TODO:
         particles = self.particles # call the class: Particles
         n = 0
-        t = particles.get_time()
+        t = self.particles.get_time()
         t1 = time.time()
-        while t < tmax:
+        step = int(tmax / dt)
+        UU = np.ones((step, 1))
+        KK = np.ones((step, 1))
+        EE = np.ones((step, 1))
+        for i in range(step):
             # update particles
-            _update_particles(dt, particles)
+            particles = _update_particles(dt, particles)[0]
+            UU[i] = _update_particles(dt, particles)[1]
+            KK[i] = _update_particles(dt, particles)[2]
+            EE[i] = UU[i] + KK[i]
             # update io
             if (n % self.io_freq == 0):
                 if self.io_screen:
@@ -277,7 +295,7 @@ class NbodySimulation:
                     fn = io_folder+"/data_"+self.io_title+"_"+str(n).zfill(5)+".txt"
                     print(fn)
                     self.particles.output(fn, t)
-                    
+
                     # savefig
                     scale = 60
                     fig, ax = plt.subplots()
@@ -300,9 +318,20 @@ class NbodySimulation:
                 dt = tmax - t
             t += dt
             n += 1
+        
+        T = np.linspace(0, tmax, step)
+        plt.plot(T, UU, 'g', alpha = .3, label = 'Potential')
+        plt.plot(T, KK, 'b', alpha = .3, label = 'Kinetic')
+        plt.plot(T, EE, '--r', alpha = .7, label = 'Total')
+        plt.xlabel('Time [code unit]')
+        plt.ylabel('Energy [code unit]')
+        plt.title(f'Energy Scheme, with {method}')
+        plt.legend()
+        plt.show()
         t2 = time.time()
         print("Time diff: ", t2 - t1)
         print("Done!")
+        
         return
 
     def _calculate_acceleration(self, mass, pos):
@@ -310,79 +339,113 @@ class NbodySimulation:
         Calculate the acceleration.
         """
         # TODO:
+        particles = self.particles
         G = self.G
         rsoft = self.rsoft
         posx = pos[:, 0]
         posy = pos[:, 1]
         posz = pos[:, 2]
         N = self.nparticles
-        
-        return ACC_jit(N, posx, posy, posz, G, mass,rsoft)
-        # return ACC_njit(N, posx, posy, posz, G, mass, rsoft)
+        U = particles.get_U()
+        K = particles.get_K()
+        vel_square = np.square(particles.get_velocities())
+        # return ACC_jit(N, posx, posy, posz, G, mass,rsoft, U, K, vel_square)
+        return ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square)
 
     def _update_particles_euler(self, dt, particles:Particles):
         # TODO:
         mass = particles.get_masses()
         pos = particles.get_positions()
         vel = particles.get_velocities()
-        acc = self._calculate_acceleration(mass, pos)
+        acc = self._calculate_acceleration(mass, pos)[0]
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
         
         y0 = np.add(y0, yder * dt)
         
+        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
+        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
+        
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
         particles.set_accelerations(acc)
         
-        return particles
+        return particles, U, K
 
     def _update_particles_rk2(self, dt, particles:Particles):
         # TODO:
         mass = particles.get_masses()
         pos = particles.get_positions()
         vel = particles.get_velocities()
-        acc = self._calculate_acceleration(mass, pos)
+        acc = self._calculate_acceleration(mass, pos)[0]
         
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
         k1 = yder
         y_temp = y0 + dt * k1 
-        acc = self._calculate_acceleration(mass, y_temp[0])
+        acc = self._calculate_acceleration(mass, y_temp[0])[0]
         k2 = np.array([y_temp[1], acc])
         y0 = np.add(y0, (dt / 2) * (k1 + k2))
         
+        acel = self._calculate_acceleration(mass, y0[0])[0]
+        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
+        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
+        
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
-        particles.set_accelerations(acc)
-        return particles
+        particles.set_accelerations(acel)
+        return particles, U, K
 
     def _update_particles_rk4(self, dt, particles:Particles):
         # TODO:
         mass = particles.get_masses()
         pos = particles.get_positions()
         vel = particles.get_velocities()
-        acc = self._calculate_acceleration(mass, pos)
+        acc = self._calculate_acceleration(mass, pos)[0]
         
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
         k1 = yder
         y_temp = y0 + 0.5 * dt * k1 
-        acc = self._calculate_acceleration(mass, y_temp[0])
+        acc = self._calculate_acceleration(mass, y_temp[0])[0]
         k2 = np.array([y_temp[1], acc])
         y_temp = y0 + 0.5 * dt * k2
-        acc = self._calculate_acceleration(mass, y_temp[0])
+        acc = self._calculate_acceleration(mass, y_temp[0])[0]
         k3 = np.array([y_temp[1], acc])
         y_temp = y0 + dt * k3
-        acc = self._calculate_acceleration(mass, y_temp[0])
+        acc = self._calculate_acceleration(mass, y_temp[0])[0]
         k4 = np.array([y_temp[1], acc])
         
         y0 = np.add(y0, (1/6) * dt * (k1 + 2*k2 + 2*k3 + k4))
         
+        acel = self._calculate_acceleration(mass, y0[0])[0]
+        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
+        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
+        
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
+        particles.set_accelerations(acel)
+        return particles, U, K
+    
+    def _update_particles_lf(self, dt, particles:Particles):
+        # TODO:
+        mass = particles.get_masses()
+        pos = particles.get_positions()
+        vel = particles.get_velocities()
+        
+        acc = particles.get_accelerations()
+        vel_prime = vel + acc * 0.5 * dt
+        pos = pos + vel_prime * dt
+        acc = self._calculate_acceleration(mass, pos)[0]
+        vel = vel_prime + acc * 0.5 * dt
+        
+        U = np.sum(self._calculate_acceleration(mass, pos)[1])
+        K = np.sum(self._calculate_acceleration(mass, pos)[2])
+        
+        particles.set_positions(pos)
+        particles.set_velocities(vel)
         particles.set_accelerations(acc)
-        return particles
+        return particles, U, K
 
 
 if __name__=='__main__':

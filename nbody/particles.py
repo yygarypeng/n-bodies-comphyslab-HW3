@@ -31,6 +31,8 @@ class Particles:
         self._velocities = np.zeros((N, 3))
         self._accelerations = np.zeros((N, 3))
         self._tags = np.linspace(1, N, N)
+        self._U = np.ones((N, 1))
+        self._K = np.ones((N, 1))
         
         return
 
@@ -55,6 +57,12 @@ class Particles:
     
     def get_time(self):
         return self._time
+    
+    def get_U(self):
+        return self._U
+    
+    def get_K(self):
+        return self._K
 
 
     def set_time(self, time):
@@ -81,17 +89,27 @@ class Particles:
         self._tags = IDs
         return
     
+    def set_U(self, U):
+        self._U = U
+        return
+    
+    def set_K(self, K):
+        self._K = K
+        return
+    
     def output(self, fn, time):
         """
         Write simulation data into a file named "fn"
-
-
         """
         mass = self._masses
         pos  = self._positions
         vel  = self._velocities
         acc  = self._accelerations
         tag  = self._tags
+        U = self._U
+        U_tot = np.sum(U)
+        K = self._K
+        K_tot = np.sum(K)
         header = """
                 ----------------------------------------------------
                 Data from a 3D direct N-body simulation. 
