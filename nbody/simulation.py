@@ -332,7 +332,7 @@ class NbodySimulation:
         print("Time diff: ", t2 - t1)
         print("Done!")
         
-        return
+        return [UU, KK]
 
     def _calculate_acceleration(self, mass, pos):
         """
