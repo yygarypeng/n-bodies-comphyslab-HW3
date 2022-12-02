@@ -106,10 +106,6 @@ class Particles:
         vel  = self._velocities
         acc  = self._accelerations
         tag  = self._tags
-        U = self._U
-        U_tot = np.sum(U)
-        K = self._K
-        K_tot = np.sum(K)
         header = """
                 ----------------------------------------------------
                 Data from a 3D direct N-body simulation. 

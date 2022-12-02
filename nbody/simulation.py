@@ -91,8 +91,8 @@ def ACC_norm(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[j, 2] -= Fz / mass[j, 0]
                 
                 U[i] = -G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * mass[i, 0] * np.sum(vel_square[i, :])
-                K[j] = 0.5 * mass[j, 0] * np.sum(vel_square[j, :])
+                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
+                              + mass[j, 0] * np.sum(vel_square[j, :]))
     return acc, U, K
 
 @jit(nopython=True)
@@ -132,8 +132,8 @@ def ACC_jit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[j, 2] -= Fz / mass[j, 0]
                 
                 U[i] = -G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * mass[i, 0] * np.sum(vel_square[i, :])
-                K[j] = 0.5 * mass[j, 0] * np.sum(vel_square[j, :])
+                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
+                              + mass[j, 0] * np.sum(vel_square[j, :]))
     return acc, U, K
 
 set_num_threads(8)
@@ -173,9 +173,9 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
                 
-                U[i] = -G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * mass[i, 0] * np.sum(vel_square[i, :])
-                K[j] = 0.5 * mass[j, 0] * np.sum(vel_square[j, :])
+                U[i] = - G * mass[i, 0] * mass[j, 0] / r
+                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
+                              + mass[j, 0] * np.sum(vel_square[j, :]))
     return acc, U, K
 
 class NbodySimulation:
@@ -297,7 +297,7 @@ class NbodySimulation:
                     self.particles.output(fn, t)
 
                     # savefig
-                    scale = 60
+                    scale = 100
                     fig, ax = plt.subplots()
                     fig.set_size_inches(10.5, 10.5, forward=True)
                     fig.set_dpi(72)
