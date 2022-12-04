@@ -277,7 +277,7 @@ class NbodySimulation:
         n = 0
         t = self.particles.get_time()
         t1 = time.time()
-        step = int(tmax / dt)
+        step = int(tmax / dt) + 1
         UU = np.ones((step, 1))
         KK = np.ones((step, 1))
         EE = np.ones((step, 1))
