@@ -74,12 +74,13 @@ def ACC_norm(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 y = posy[i] - posy[j]
                 z = posz[i] - posz[j]
                 r = np.sqrt(x**2 + y**2 + z**2) + rsoft
-                theta = np.arccos(z / r)
+                # theta = np.arccos(z / r)
                 phi = np.arctan2(y, x)
                 F = - G * mass[i, 0] * mass[j, 0] / np.square(r)
-                Fx = F * np.cos(theta) * np.cos(phi)
-                Fy = F * np.cos(theta) * np.sin(phi)
-                Fz = F * np.sin(theta)
+                Fx = F * np.cos(phi)
+                Fy = F * np.sin(phi)
+                # Fz = F * np.sin(theta)
+                Fz = 0
 
                 acc[i, 0] += Fx / mass[i, 0]
                 acc[j, 0] -= Fx / mass[j, 0]
@@ -90,9 +91,9 @@ def ACC_norm(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
                 
-                U[i] = -G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
-                              + mass[j, 0] * np.sum(vel_square[j, :]))
+    U = np.sum(U)
+    K = np.sum(K)
+    
     return acc, U, K
 
 @jit(nopython=True)
@@ -115,12 +116,13 @@ def ACC_jit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 y = posy[i] - posy[j]
                 z = posz[i] - posz[j]
                 r = np.sqrt(x**2 + y**2 + z**2) + rsoft
-                theta = np.arccos(z / r)
+                # theta = np.arccos(z / r)
                 phi = np.arctan2(y, x)
                 F = - G * mass[i, 0] * mass[j, 0] / np.square(r)
-                Fx = F * np.cos(theta) * np.cos(phi)
-                Fy = F * np.cos(theta) * np.sin(phi)
-                Fz = F * np.sin(theta)
+                Fx = F * np.cos(phi)
+                Fy = F * np.sin(phi)
+                # Fz = F * np.sin(theta)
+                Fz = 0
 
                 acc[i, 0] += Fx / mass[i, 0]
                 acc[j, 0] -= Fx / mass[j, 0]
@@ -131,9 +133,9 @@ def ACC_jit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
                 
-                U[i] = -G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
-                              + mass[j, 0] * np.sum(vel_square[j, :]))
+    U = np.sum(U)
+    K = np.sum(K)
+    
     return acc, U, K
 
 set_num_threads(8)
@@ -157,12 +159,13 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 y = posy[i] - posy[j]
                 z = posz[i] - posz[j]
                 r = np.sqrt(x**2 + y**2 + z**2) + rsoft
-                theta = np.arccos(z / r)
+                # theta = np.arccos(z / r)
                 phi = np.arctan2(y, x)
                 F = - G * mass[i, 0] * mass[j, 0] / np.square(r)
-                Fx = F * np.cos(theta) * np.cos(phi)
-                Fy = F * np.cos(theta) * np.sin(phi)
-                Fz = F * np.sin(theta)
+                Fx = F * np.cos(phi)
+                Fy = F * np.sin(phi)
+                # Fz = F * np.sin(theta)
+                Fz = 0
 
                 acc[i, 0] += Fx / mass[i, 0]
                 acc[j, 0] -= Fx / mass[j, 0]
@@ -174,8 +177,11 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[j, 2] -= Fz / mass[j, 0]
                 
                 U[i] = - G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
-                              + mass[j, 0] * np.sum(vel_square[j, :]))
+                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i]) 
+                              + mass[j, 0] * np.sum(vel_square[j]))
+    U = np.sum(U)
+    K = np.sum(K)
+    
     return acc, U, K
 
 class NbodySimulation:
@@ -278,9 +284,9 @@ class NbodySimulation:
         t = self.particles.get_time()
         t1 = time.time()
         step = int(tmax / dt) + 1
-        UU = np.ones((step, 1))
-        KK = np.ones((step, 1))
-        EE = np.ones((step, 1))
+        UU = np.zeros((step, 1))
+        KK = np.zeros((step, 1))
+        EE = np.zeros((step, 1))
         for i in range(step):
             # update particles
             particles = _update_particles(dt, particles)[0]
@@ -297,7 +303,7 @@ class NbodySimulation:
                     self.particles.output(fn, t)
 
                     # savefig
-                    scale = 100
+                    scale = 50
                     fig, ax = plt.subplots()
                     fig.set_size_inches(10.5, 10.5, forward=True)
                     fig.set_dpi(72)
@@ -309,7 +315,7 @@ class NbodySimulation:
                     pos = particles.get_positions()
                     plt.title(f'Time = {np.round(t, 0)}')
                     FIG = f'{io_folder_fig}/fig_{self.io_title}_{str(int(0.01 * n)).zfill(1)}.png'
-                    ax.scatter(pos[:, 0], pos[:, 1], s = 10, alpha = .3)
+                    ax.scatter(pos[:, 0], pos[:, 1], s = 50, alpha = .3)
                     plt.savefig(FIG)
                     plt.show()
             
@@ -332,7 +338,7 @@ class NbodySimulation:
         print("Time diff: ", t2 - t1)
         print("Done!")
         
-        return [UU, KK]
+        return UU, KK
 
     def _calculate_acceleration(self, mass, pos):
         """
@@ -348,9 +354,12 @@ class NbodySimulation:
         N = self.nparticles
         U = particles.get_U()
         K = particles.get_K()
-        vel_square = np.square(particles.get_velocities())
-        # return ACC_jit(N, posx, posy, posz, G, mass,rsoft, U, K, vel_square)
-        return ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square)
+        vel = particles.get_velocities()
+        vel_square = np.square(vel)
+        
+        arr = ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square)
+        
+        return arr 
 
     def _update_particles_euler(self, dt, particles:Particles):
         # TODO:
@@ -358,13 +367,13 @@ class NbodySimulation:
         pos = particles.get_positions()
         vel = particles.get_velocities()
         acc = self._calculate_acceleration(mass, pos)[0]
+        U = self._calculate_acceleration(mass, pos)[1]
+        K = self._calculate_acceleration(mass, pos)[2]
+        
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
         
         y0 = np.add(y0, yder * dt)
-        
-        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
-        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
         
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
@@ -378,6 +387,8 @@ class NbodySimulation:
         pos = particles.get_positions()
         vel = particles.get_velocities()
         acc = self._calculate_acceleration(mass, pos)[0]
+        U = self._calculate_acceleration(mass, pos)[1]
+        K = self._calculate_acceleration(mass, pos)[2]
         
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
@@ -387,13 +398,10 @@ class NbodySimulation:
         k2 = np.array([y_temp[1], acc])
         y0 = np.add(y0, (dt / 2) * (k1 + k2))
         
-        acel = self._calculate_acceleration(mass, y0[0])[0]
-        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
-        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
-        
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
-        particles.set_accelerations(acel)
+        particles.set_accelerations(acc)
+        
         return particles, U, K
 
     def _update_particles_rk4(self, dt, particles:Particles):
@@ -402,6 +410,8 @@ class NbodySimulation:
         pos = particles.get_positions()
         vel = particles.get_velocities()
         acc = self._calculate_acceleration(mass, pos)[0]
+        U = self._calculate_acceleration(mass, pos)[1]
+        K = self._calculate_acceleration(mass, pos)[2]
         
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
@@ -418,13 +428,10 @@ class NbodySimulation:
         
         y0 = np.add(y0, (1/6) * dt * (k1 + 2*k2 + 2*k3 + k4))
         
-        acel = self._calculate_acceleration(mass, y0[0])[0]
-        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
-        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
-        
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
-        particles.set_accelerations(acel)
+        particles.set_accelerations(acc)
+        
         return particles, U, K
     
     def _update_particles_lf(self, dt, particles:Particles):
@@ -432,19 +439,19 @@ class NbodySimulation:
         mass = particles.get_masses()
         pos = particles.get_positions()
         vel = particles.get_velocities()
+        U = self._calculate_acceleration(mass, pos)[1]
+        K = self._calculate_acceleration(mass, pos)[2]
         
-        acc = particles.get_accelerations()
+        acc = self._calculate_acceleration(mass, pos)[0]
         vel_prime = vel + acc * 0.5 * dt
         pos = pos + vel_prime * dt
         acc = self._calculate_acceleration(mass, pos)[0]
         vel = vel_prime + acc * 0.5 * dt
         
-        U = np.sum(self._calculate_acceleration(mass, pos)[1])
-        K = np.sum(self._calculate_acceleration(mass, pos)[2])
-        
         particles.set_positions(pos)
         particles.set_velocities(vel)
         particles.set_accelerations(acc)
+        
         return particles, U, K
 
 

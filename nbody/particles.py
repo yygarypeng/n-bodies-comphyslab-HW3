@@ -31,8 +31,8 @@ class Particles:
         self._velocities = np.zeros((N, 3))
         self._accelerations = np.zeros((N, 3))
         self._tags = np.linspace(1, N, N)
-        self._U = np.ones((N, 1))
-        self._K = np.ones((N, 1))
+        self._U = np.zeros((N, 1))
+        self._K = np.zeros((N, 1))
         
         return
 
