@@ -8,10 +8,10 @@
 \usepackage{pgfplotstable}
 \usepackage{tikz,pgfplots}
 \usepackage{graphicx}
-\usepackage{float} 
+\usepackage{float}
 \usepackage{subfigure}
 \usepackage[toc,page]{appendix}
-\usepackage{amsmath}  %I added this so that you can use the align tool for equations!
+\usepackage{amsmath} %I added this so that you can use the align tool for equations!
 \usepackage{amssymb}
 \usepackage{array}
 \usepackage{tabularx}
@@ -25,11 +25,11 @@
 \usepackage{caption}
 
 \geometry{
-  a4paper,
-  total = {170mm, 257mm},
-  left = 20mm,
-  top = 20mm,
-  }
+    a4paper,
+    total = {170mm, 257mm},
+    left = 20mm,
+    top = 20mm,
+    }
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -54,9 +54,9 @@
 \captionsetup[lstlisting]{singlelinecheck=false, margin=12pt, labelsep=default, labelfont=default}
 %We can also use: labelsep=period or labelsep=spacce, labelfont=default or labelfont=bf
 \pgfplotsset{compat = 1.18}
+%pgfplotsset Version 1.18
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Again, Don't change anything Above %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Again, Don't change anything Above %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \begin{document}
@@ -72,94 +72,127 @@
 
 
 \section{Programming Assignments}
-  \subsection{(1) Normal Cloud}
-  In this section, in the beginning, we create a cloud of particles ($N = 10^4$) distributed by a normal distribution with zero mean and one variance (or in other words, $s.d. = 1$) in 3D Cartesian coordinates. Additionally, we set the initial particle velocities, and accelerations are distributed by the same normal distribution and the system's total mass is $20$. We, afterward, use our N body simulation code from t = 0 up to t = 10 with a constant time step $\Delta t = 0.01$ and a soften length $r_{soft} = 0.01$. We, meanwhile, implement {\ttfamily numba @njit} with 8 cores to accelerate the loop speed ({\ttfamily @jit (nopython=True)} have spent more time so I discard to use it). Besides, I, firstly, set the particle's number = $10^5$ tried to use either {\ttfamily @jit} or {\ttfamily @njit} to accelerate the code; however, with {\ttfamily RK4} it takes no lowering than 800 minutes! Therefore, I use $10^4$, instead. Figure\ref{RK4_cloud} is the group of snap-shot of the normal cloud distribution with the RK4 method and with the extended boundary from -50 to +50. This is a time-consuming task, for orders of 4, RK4, it took 42015 [s]; for orders of two, RK2 and Leapfrog, they took 29506 and 18009 [s], respectively. The last order of one, Euler, took 17794 [s].
-  
-  \vspace{6pt}
+    \subsection{(1) Normal Cloud}
+    In this section, in the beginning, we create a cloud of particles ($N = 10^3$) distributed by a normal distribution with zero mean and one variance (or in other words, $s.d. = 1$) in 3D Cartesian coordinates. Additionally, we set the initial particle velocities, and accelerations are distributed by the ``same'' normal distribution and the system's total mass is $20$. We, afterward, use our N body simulation code from t = 0 up to t = 10 with a constant time step $\Delta t = 0.01$ and a soften length $r_{soft} = 0.001$ (here, we adjust this soft length from 0.01 to 0.001 so as to avoid ``through the mold''). We, meanwhile, implement {\ttfamily numba @njit} with 8 cores to accelerate the loop speed ({\ttfamily @jit (nopython=True)} have spent more time so I discard to use it). Besides, I, firstly, set the particle's number = $10^5$ tried to use either {\ttfamily @jit} or {\ttfamily @njit} to accelerate the code; however, with {\ttfamily RK4} it takes no lowering than 800 minutes! Therefore, I use $10^3$, instead (after discussing this problem with professor in Monday's lecture). Figure\ref{RK4_cloud} is the group of snap-shot of the normal cloud distribution with the RK4 method and with the extended boundary from -50 to +50. This is a time-consuming task, for orders of 4, RK4, it took 566 (for $10^4$: 42015) [s]; for orders of two, RK2 and Leapfrog, they took 392 (for $10^4$: 29506), and 321 (for $10^4$: 18009) [s], respectively. The last order of one, Euler, took 322 (for $10^4$: 17794) [s].
 
-  \begin{figure}[H]
-    \centering 
-    \includegraphics[width = 0.45\textwidth]{./RK4/RK4_0.png}
-    \includegraphics[width = 0.45\textwidth]{./RK4/RK4_2.png}
-  \end{figure}
-  \begin{figure}[H]
-    \centering 
-    \includegraphics[width = 0.45\textwidth]{./RK4/RK4_4.png} 
-    \includegraphics[width = 0.45\textwidth]{./RK4/RK4_6.png}
-    \includegraphics[width = 0.45\textwidth]{./RK4/RK4_8.png}
-    \includegraphics[width = 0.45\textwidth]{./RK4/RK4_10.png} 
-    \caption{This the normal cloud with RK4, from $t=0$ to $t=10$ and $dt=0.01$. One run took: 18009 [s]}
-    \label{RK4_cloud}
-  \end{figure}
 
-  \subsection{(2) Leapfrog method}
-  The leapfrog method is a second-order method for solving an initial value problem. The main idea in this is divided into three parts, kick-drift-kick. For each time step $dt$, each particle receives a half-step kick,
-  \[v_{i+1/2} = v_i + a_i\frac{dt}{2}\]
-  and use the above half-step velocity, and followed by a full-step drift,
-  \[x_{i+1} = x_i + v_{i+1/2}dt\]
-  and lastly, use the above drift, and followed by another half-step kick,
-  \[v_{i+1} = v_{i+1/2} + a_{i+1}\frac{dt}{2}\]
-  \newline
-  In the next subsection, we will discuss and compare the Leapfrog method with Euler, RK2, and RK4 as well.
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 0.45\textwidth]{./RK4/0.png}
+        \includegraphics[width = 0.45\textwidth]{./RK4/2.png} 
+    \end{figure}
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 0.45\textwidth]{./RK4/4.png}  
+        \includegraphics[width = 0.45\textwidth]{./RK4/6.png}
+        \includegraphics[width = 0.45\textwidth]{./RK4/8.png}
+        \includegraphics[width = 0.45\textwidth]{./RK4/10.png} 
+        \caption{This the normal cloud with RK4, from $t=0$ to $t=10$ and $dt=0.01$.}
+        \label{RK4_cloud}
+    \end{figure}
 
-  \begin{figure}[H]
-    \centering 
-    \includegraphics[width = 0.45\textwidth]{./LF/0.png} 
-    \includegraphics[width = 0.45\textwidth]{./LF/2.png} 
-    \includegraphics[width = 0.45\textwidth]{./LF/4.png} 
-    \includegraphics[width = 0.45\textwidth]{./LF/6.png} 
-    \includegraphics[width = 0.45\textwidth]{./LF/8.png} 
-    \includegraphics[width = 0.45\textwidth]{./LF/10.png}  
-    \caption{This the normal cloud with Leapfrog, from $t=0$ to $t=10$ and $dt=0.01$. One run took: 18009 [s]}
-    \label{LF}
-  \end{figure}
+    \subsection{(2) Leapfrog method}
+    The leapfrog method is a second-order method for solving an initial value problem. The main idea in this is divided into three parts, kick-drift-kick. For each time step $dt$, each particle receives a half-step kick,
+    \[v_{i+1/2} = v_i + a_i\frac{dt}{2}\]
+    and use the above half-step velocity, and followed by a full-step drift,
+    \[x_{i+1} = x_i + v_{i+1/2}dt\]
+    and lastly, use the above drift, and followed by another half-step kick,
+    \[v_{i+1} = v_{i+1/2} + a_{i+1}\frac{dt}{2}\]
 
-  \subsection{(3) Energy comparison}
-  In this section, we will discuss kinetic energy, potential energy, and total energy. The definitions are below:
-  \[U = -\frac{Gm_{i}m_{j}}{r + r_{soft}}\]
-  \[K = \frac{1}{2}m_{i}v_{i}^{2}\]
-  \[E = U + K\]
-  where the subscriptions indicate which particles; $G$ is the gravitational constant, here we set it to 1; $m$ is the mass of each particle; $r$ and $r_{soft}$ is the distance between two particles and the tolerance of distance, which can avoid the nominator equal to zero. After defining all the parameters, we use four different methods, Euler, RK2, RK4, and Leapfrog, and implement the initial conditions as in section 1 to rerun the codes.
-  \newline
+    In the following subsection, we will discuss and compare the Leapfrog, Euler, RK2, and RK4 as well. 
 
-  See in Figure \ref{E1}\textasciitilde\ref{E4}, we can find out that the potential energy is much smaller than the kinetic energy owing to the small masses of particles. On the other hand, the total energy is dominated by the kinetic part, which makes sense to us. In Figure \ref{E1}\textasciitilde\ref{E4}, we can also see the total energy is not the ``constant'' at the beginning because we initially set the normal random accelerations to each particle which can be regarded that there are other forces applied to the particles. Nevertheless, in the wake of a little period, the total energy will gradually be in a stable stage because of no external force. These phenomena not merely can see in the Euler but in others as well. Compare this with the stable speed, which means how long to be stable. We use RK4 as the theoretical benchmark. It is obvious that Euler (first order) is the slowest one; in the other words, it is the most distorted one; for the second order, RK2 is shapeless at the beginning, and Leapfrog is the most similar one with the benchmark. Therefore, we can conclude that if individuals want to calculate a large number of particles problem, they can choose the Leapfrog method because it has not merely high speed but also high accuracy. (detail of accuracy can see in the next section, the accuracy compared with the benchmark is within one order.)
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 0.45\textwidth]{./LF/0.png} 
+        \includegraphics[width = 0.45\textwidth]{./LF/2.png} 
+        \includegraphics[width = 0.45\textwidth]{./LF/4.png} 
+        \includegraphics[width = 0.45\textwidth]{./LF/6.png} 
+        \includegraphics[width = 0.45\textwidth]{./LF/8.png} 
+        \includegraphics[width = 0.45\textwidth]{./LF/10.png}  
+        \caption{This the normal cloud with Leapfrog, from $t=0$ to $t=10$ and $dt=0.01$.}
+        \label{LF}
+    \end{figure}
 
-  \begin{figure}[H]
-    \centering 
-    \includegraphics[width = 10cm]{RK4_E.png}
-    \caption{RK4, y-axis is Energy; x-axis is time.}
-    \label{E1}
-  \end{figure}
+    \subsection{(3) Energy comparison}
+    In this section, we will discuss kinetic energy, potential energy, and total energy. The definitions are below:
 
-  \begin{figure}[H]
-    \centering 
-    \includegraphics[width = 10cm]{RK2_E.png}
-    \caption{RK2, y-axis is Energy; x-axis is time.}
-    \label{E2}
-  \end{figure}
+    \[U = -\frac{Gm_{i}m_{j}}{r + r_{soft}}\]
+    \[K = \frac{1}{2}m_{i}v_{i}^{2}\]
+    \[E = U + K\]
 
-  \begin{figure}[H]
-    \centering 
-    \includegraphics[width = 10cm]{LF_E.png}
-    \caption{Leapfrog, y-axis is Energy; x-axis is time.}
-    \label{E3}
-  \end{figure}
+    where the subscriptions indicate which particles; $G$ is the gravitational constant, here we set it to 1; $m$ is the mass of each particle; $r$ and $r_{soft}$ is the distance between two particles and the tolerance of distance, which can avoid the nominator equal to zero. After defining all the parameters, we use four different methods, Euler, RK2, RK4, and Leapfrog, and implement the initial conditions as in section 1 to rerun the codes.
 
-  \begin{figure}[H]
-    \centering 
-    \includegraphics[width = 10cm]{Euler_E.png}
-    \caption{Euler, y-axis is Energy; x-axis is time.}
-    \label{E4}
-  \end{figure}
+    Firstly, we use the ``two-body'' problem to check whether our {\ttfamily nbody} make sense or not. Therefore, we check with the energies in the solar system and two particles situation. In Figure \ref{2body}, it is obvious that the total energy is conserved implying that our {\ttfamily nbody} package is ``legitimate''. On the other hand, in Figure \ref{collision}, we use the same code but in total particle's number = 2, and the left is no collision situation, the total energy is conserved and the potential energy gradually increases with the kinetic energy decrease. However, the right also has the same conditions but with the ``collision'' which leads to a positive peak in the kinetic energy and also a negative peak in potential. Although physically, the total energy is conserved, this numerical simulation cannot handle the ``through the mold'' situation! Because the total energy is proportional to the first order of inverse r; the acceleration is proportional to the second order of inverse r (gravitational force) which directly influences velocities. Ergo, we can see that kinetic energy dominates the total energy and will have a manifest peak when collisions occur.
 
-  So as to analyze the accuracy of the Leapfrog method, we set the RK4 (fourth order) as a benchmark. We, likewise, applied a logarithm of 10 to investigate the order of accuracy thereafter. In Figure \ref{RK4_LF}, we can see the accuracy comparisons between Leapfrog methods and the benchmark.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width = 10cm]{./2body.png}  
+        \caption{This the solar system simulation we use in the lecture, the source code I put it in section Code.}
+        \label{2body}
+    \end{figure}
 
-  \begin{figure}[H]
-    \centering 
-    \includegraphics[width = 10cm]{RK4_D.png}
-    \caption{In the comparison of energy schemes between the RK4 and Leapfrog methods, the average accuracy is approximately 0.9 orders.}
-    \label{RK4_LF}
-  \end{figure}
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 0.45\textwidth]{./RK4/part2_no_collision.png}
+        \includegraphics[width = 0.45\textwidth]{./RK4/part2_collision.png} 
+        \caption{This the {\ttfamily nbody} simulation with two particles. The left is non-collision situation; the right happened collide.}
+        \label{collision}
+    \end{figure}
+
+    See in Figure \ref{E1}\textasciitilde\ref{E4}, we can find out that the potential energy is much smaller than the kinetic energy owing to the small masses of particles. On the other hand, the total energy is dominated by the kinetic part, which makes sense to us in this simulation (reasons have been elaborated above). In Figure \ref{E1}\textasciitilde\ref{E4}, we can also see the total energy is not the ``constant'' because occur many collisions! In Figure \ref{RK4_cloud}, \ref{LF}, we can find that no matter what time it is, there are some particles always crowded in the center; at the same time, they happen collisions! Besides, if we take the higher resolution (higher orders algorithm), the more severe oscillations the system behaves. These phenomena not merely can see in the RK4 but in other low resolutions as well. 
+    
+    It is obvious that Euler (first order) is the most appeased one yet we cannot conclude that it is the ``precise'' one. In the other words, it may be the most distorted one. While if we take the shape angle to the problem, for the second order, RK2 is more shapeless (fewer fluctuations) than Leapfrog. Therefore, we can sum up that if individuals want to calculate a large number of particles problem, and take shapes into account, they can choose the Leapfrog method because it has not merely high speed but also high sharpness. (detail of accuracy can see in the next section, the accuracy compared with the benchmark is within one order.)
+
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 10cm]{./RK4/Energy.png}
+        \caption{RK4, y-axis is Energy; x-axis is time.}
+        \label{E1}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 10cm]{./RK2/Energy.png}
+        \caption{RK2, y-axis is Energy; x-axis is time.}
+        \label{E2}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 10cm]{./LF/Energy.png}
+        \caption{Leapfrog, y-axis is Energy; x-axis is time.}
+        \label{E3}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 10cm]{./Euler/Energy.png}
+        \caption{Euler, y-axis is Energy; x-axis is time.}
+        \label{E4}
+    \end{figure}
+
+    We use RK4 (the highest preciseness algorithm in this simulation) as the theoretical benchmark even though it has acute fluctuations. So as to analyze the accuracy of the Leapfrog method, we set the RK4 (fourth order) as a different comparison benchmark. We, likewise, applied a logarithm of 10 to investigate the order of accuracy thereafter. In Figure \ref{RK4_LF}, we can see the average accuracy comparisons between Leapfrog methods and the benchmark. Simultaneously, Rk2 and Euler are also in this benchmark comparison. We can see that the second-order has familiar accuracy which is better than the first-order algorithm.
+
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 10cm]{./Compare/LF.png}
+        \caption{In the comparison of energy schemes between the RK4 and Leapfrog methods, the average accuracy is approximately 0.9 orders.}
+        \label{RK4_LF}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 10cm]{./Compare/RK2.png}
+        \caption{In the comparison of energy schemes between the RK4 and RK2 methods, the average accuracy is approximately 0.9 orders.}
+        \label{RK4_RK2}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering 
+        \includegraphics[width = 10cm]{./Compare/Euler.png}
+        \caption{In the comparison of energy schemes between the RK4 and Euler methods, the average accuracy is approximately 0.9 orders.}
+        \label{RK4_Euler}
+    \end{figure}
 
 
 \section{Codes}
@@ -167,7 +200,7 @@
     {\centerline{\ttfamily <https://github.com/gary20000915/Comphyslab-HW3.git>}}
 
     \subsection{{\ttfamily\ particles.py}}
-      \begin{lstlisting}[language={Python}]
+        \begin{lstlisting}[language={Python}]
 import numpy as np
 
 class Particles:
@@ -201,8 +234,8 @@ class Particles:
         self._velocities = np.zeros((N, 3))
         self._accelerations = np.zeros((N, 3))
         self._tags = np.linspace(1, N, N)
-        self._U = np.ones((N, 1))
-        self._K = np.ones((N, 1))
+        self._U = np.zeros((N, 1))
+        self._K = np.zeros((N, 1))
         
         return
 
@@ -293,10 +326,10 @@ class Particles:
                             acc[:,0],acc[:,1],acc[:,2]),header=header)
 
         return
-      \end{lstlisting}
-      
+    \end{lstlisting}
+
     \subsection{{\ttfamily\ simulation.py}}
-      \begin{lstlisting}[language={Python}]
+        \begin{lstlisting}[language={Python}]
 import numpy as np
 from pathlib import Path
 import time
@@ -353,88 +386,6 @@ For the course, computational physics lab
 
 """
 
-def ACC_norm(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
-    '''
-    Acceleration with normal for loops.
-    
-    :param N: number of particles
-    :param posx: position x
-    :param posy: position y
-    :param posz: position z
-    :param G: gravitational constant
-    :param mass: mass
-    '''
-    
-    acc = np.zeros((N, 3))
-    for i in range(N):
-        for j in range(N):
-            if j > i:
-                x = posx[i] - posx[j]
-                y = posy[i] - posy[j]
-                z = posz[i] - posz[j]
-                r = np.sqrt(x**2 + y**2 + z**2) + rsoft
-                theta = np.arccos(z / r)
-                phi = np.arctan2(y, x)
-                F = - G * mass[i, 0] * mass[j, 0] / np.square(r)
-                Fx = F * np.cos(theta) * np.cos(phi)
-                Fy = F * np.cos(theta) * np.sin(phi)
-                Fz = F * np.sin(theta)
-
-                acc[i, 0] += Fx / mass[i, 0]
-                acc[j, 0] -= Fx / mass[j, 0]
-
-                acc[i, 1] += Fy / mass[i, 0]
-                acc[j, 1] -= Fy / mass[j, 0]
-                
-                acc[i, 2] += Fz / mass[i, 0]
-                acc[j, 2] -= Fz / mass[j, 0]
-                
-                U[i] = -G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
-                              + mass[j, 0] * np.sum(vel_square[j, :]))
-    return acc, U, K
-
-@jit(nopython=True)
-def ACC_jit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
-    '''
-    Acceleration with numba jit for loops
-    
-    :param N: number of particles
-    :param posx: position x
-    :param posy: position y
-    :param posz: position z
-    :param G: gravitational constant
-    :param mass: mass
-    '''
-    acc = np.zeros((N, 3))
-    for i in range(N):
-        for j in range(N):
-            if j > i:
-                x = posx[i] - posx[j]
-                y = posy[i] - posy[j]
-                z = posz[i] - posz[j]
-                r = np.sqrt(x**2 + y**2 + z**2) + rsoft
-                theta = np.arccos(z / r)
-                phi = np.arctan2(y, x)
-                F = - G * mass[i, 0] * mass[j, 0] / np.square(r)
-                Fx = F * np.cos(theta) * np.cos(phi)
-                Fy = F * np.cos(theta) * np.sin(phi)
-                Fz = F * np.sin(theta)
-
-                acc[i, 0] += Fx / mass[i, 0]
-                acc[j, 0] -= Fx / mass[j, 0]
-
-                acc[i, 1] += Fy / mass[i, 0]
-                acc[j, 1] -= Fy / mass[j, 0]
-                
-                acc[i, 2] += Fz / mass[i, 0]
-                acc[j, 2] -= Fz / mass[j, 0]
-                
-                U[i] = -G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
-                              + mass[j, 0] * np.sum(vel_square[j, :]))
-    return acc, U, K
-
 set_num_threads(8)
 @njit(parallel=True)
 def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
@@ -459,9 +410,10 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 theta = np.arccos(z / r)
                 phi = np.arctan2(y, x)
                 F = - G * mass[i, 0] * mass[j, 0] / np.square(r)
-                Fx = F * np.cos(theta) * np.cos(phi)
-                Fy = F * np.cos(theta) * np.sin(phi)
-                Fz = F * np.sin(theta)
+                Fx = F * np.cos(phi) * np.sin(theta)
+                Fy = F * np.sin(phi) * np.sin(theta)
+                Fz = F * np.cos(theta)
+                # Fz = 0
 
                 acc[i, 0] += Fx / mass[i, 0]
                 acc[j, 0] -= Fx / mass[j, 0]
@@ -474,7 +426,10 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 
                 U[i] = - G * mass[i, 0] * mass[j, 0] / r
                 K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
-                              + mass[j, 0] * np.sum(vel_square[j, :]))
+                                + mass[j, 0] * np.sum(vel_square[j, :]))
+    U = np.sum(U)
+    K = np.sum(K)
+    
     return acc, U, K
 
 class NbodySimulation:
@@ -517,7 +472,7 @@ class NbodySimulation:
         :param G: the graivtational constant
         :param rsoft: float, a soften length
         :param meothd: string, the numerical scheme
-                       support "Euler", "RK2", and "RK4"
+                        support "Euler", "RK2", and "RK4"
 
         :param io_freq: int, the frequency to outupt data.
                         io_freq <=0 for no output. 
@@ -577,9 +532,9 @@ class NbodySimulation:
         t = self.particles.get_time()
         t1 = time.time()
         step = int(tmax / dt) + 1
-        UU = np.ones((step, 1))
-        KK = np.ones((step, 1))
-        EE = np.ones((step, 1))
+        UU = np.zeros((step, 1))
+        KK = np.zeros((step, 1))
+        EE = np.zeros((step, 1))
         for i in range(step):
             # update particles
             particles = _update_particles(dt, particles)[0]
@@ -596,7 +551,7 @@ class NbodySimulation:
                     self.particles.output(fn, t)
 
                     # savefig
-                    scale = 100
+                    scale = 50
                     fig, ax = plt.subplots()
                     fig.set_size_inches(10.5, 10.5, forward=True)
                     fig.set_dpi(72)
@@ -608,7 +563,7 @@ class NbodySimulation:
                     pos = particles.get_positions()
                     plt.title(f'Time = {np.round(t, 0)}')
                     FIG = f'{io_folder_fig}/fig_{self.io_title}_{str(int(0.01 * n)).zfill(1)}.png'
-                    ax.scatter(pos[:, 0], pos[:, 1], s = 10, alpha = .3)
+                    ax.scatter(pos[:, 0], pos[:, 1], s = 50, alpha = .3)
                     plt.savefig(FIG)
                     plt.show()
             
@@ -619,9 +574,10 @@ class NbodySimulation:
             n += 1
         
         T = np.linspace(0, tmax, step)
+        plt.figure(dpi=120)
         plt.plot(T, UU, 'g', alpha = .3, label = 'Potential')
         plt.plot(T, KK, 'b', alpha = .3, label = 'Kinetic')
-        plt.plot(T, EE, '--r', alpha = .7, label = 'Total')
+        plt.plot(T, EE, '--r', alpha = .6, label = 'Total')
         plt.xlabel('Time [code unit]')
         plt.ylabel('Energy [code unit]')
         plt.title(f'Energy Scheme, with {method}')
@@ -631,7 +587,7 @@ class NbodySimulation:
         print("Time diff: ", t2 - t1)
         print("Done!")
         
-        return [UU, KK]
+        return UU, KK
 
     def _calculate_acceleration(self, mass, pos):
         """
@@ -647,9 +603,12 @@ class NbodySimulation:
         N = self.nparticles
         U = particles.get_U()
         K = particles.get_K()
-        vel_square = np.square(particles.get_velocities())
-        # return ACC_jit(N, posx, posy, posz, G, mass,rsoft, U, K, vel_square)
-        return ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square)
+        vel = particles.get_velocities()
+        vel_square = np.square(vel)
+        
+        arr = ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square)
+        
+        return arr 
 
     def _update_particles_euler(self, dt, particles:Particles):
         # TODO:
@@ -657,13 +616,14 @@ class NbodySimulation:
         pos = particles.get_positions()
         vel = particles.get_velocities()
         acc = self._calculate_acceleration(mass, pos)[0]
+        U = self._calculate_acceleration(mass, pos)[1]
+        K = self._calculate_acceleration(mass, pos)[2]
+        
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
         
         y0 = np.add(y0, yder * dt)
-        
-        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
-        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
+        acc = self._calculate_acceleration(mass, y0[0])[0]
         
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
@@ -677,6 +637,8 @@ class NbodySimulation:
         pos = particles.get_positions()
         vel = particles.get_velocities()
         acc = self._calculate_acceleration(mass, pos)[0]
+        U = self._calculate_acceleration(mass, pos)[1]
+        K = self._calculate_acceleration(mass, pos)[2]
         
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
@@ -685,14 +647,12 @@ class NbodySimulation:
         acc = self._calculate_acceleration(mass, y_temp[0])[0]
         k2 = np.array([y_temp[1], acc])
         y0 = np.add(y0, (dt / 2) * (k1 + k2))
-        
-        acel = self._calculate_acceleration(mass, y0[0])[0]
-        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
-        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
+        acc = self._calculate_acceleration(mass, y0[0])[0]
         
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
-        particles.set_accelerations(acel)
+        particles.set_accelerations(acc)
+        
         return particles, U, K
 
     def _update_particles_rk4(self, dt, particles:Particles):
@@ -701,6 +661,8 @@ class NbodySimulation:
         pos = particles.get_positions()
         vel = particles.get_velocities()
         acc = self._calculate_acceleration(mass, pos)[0]
+        U = self._calculate_acceleration(mass, pos)[1]
+        K = self._calculate_acceleration(mass, pos)[2]
         
         y0 = np.array([pos, vel])
         yder = np.array([vel, acc])
@@ -716,14 +678,12 @@ class NbodySimulation:
         k4 = np.array([y_temp[1], acc])
         
         y0 = np.add(y0, (1/6) * dt * (k1 + 2*k2 + 2*k3 + k4))
-        
-        acel = self._calculate_acceleration(mass, y0[0])[0]
-        U = np.sum(self._calculate_acceleration(mass, y0[0])[1])
-        K = np.sum(self._calculate_acceleration(mass, y0[0])[2])
+        acc = self._calculate_acceleration(mass, y0[0])[0]
         
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
-        particles.set_accelerations(acel)
+        particles.set_accelerations(acc)
+        
         return particles, U, K
     
     def _update_particles_lf(self, dt, particles:Particles):
@@ -731,19 +691,19 @@ class NbodySimulation:
         mass = particles.get_masses()
         pos = particles.get_positions()
         vel = particles.get_velocities()
+        U = self._calculate_acceleration(mass, pos)[1]
+        K = self._calculate_acceleration(mass, pos)[2]
         
-        acc = particles.get_accelerations()
+        acc = self._calculate_acceleration(mass, pos)[0]
         vel_prime = vel + acc * 0.5 * dt
         pos = pos + vel_prime * dt
         acc = self._calculate_acceleration(mass, pos)[0]
         vel = vel_prime + acc * 0.5 * dt
         
-        U = np.sum(self._calculate_acceleration(mass, pos)[1])
-        K = np.sum(self._calculate_acceleration(mass, pos)[2])
-        
         particles.set_positions(pos)
         particles.set_velocities(vel)
         particles.set_accelerations(acc)
+        
         return particles, U, K
 
 
@@ -757,13 +717,13 @@ if __name__=='__main__':
     sim.evolve(dt = 1, tmax = 10)
     print(sim.G)
     print("Done")
-      \end{lstlisting}
+        \end{lstlisting}
 
     \subsection{{\ttfamily\ NormalCloud.ipynb}}
-      \begin{lstlisting}[language={Python}]
+        \begin{lstlisting}[language={Python}]
 # %% [markdown]
 # ## Homework 3
-# ### Programming Assignment 1
+# ### Programming Assignment
 # ### 111 Computational Physics Lab  
 #   >Author: Yuan-Yen Peng 108000204  
 #   >Email: garyphys0915@gapp.nthu.edu.com  
@@ -782,25 +742,30 @@ from nbody.simulation import NbodySimulation
 
 # %%
 problem_name = "NormalCloud"
-Num = int(1e4)
+Num = int(2)
 tmax = 10
 dt = 0.01
-r_soft = 0.001
+step = int(tmax / dt)
+r_soft = 0.0001
+
+radn = np.zeros((Num, 3))
+for i in range(Num):
+    mu, sigma = 0, 1 # mean = 0; variance = 1, i.e., standard deviation = sqrt(var) = 1
+    radn[i, :] = np.random.normal(mu, sigma, 3)
 
 # %%
 set_num_threads(8)
 @njit(parallel = True)
-def generator(N, positions, velocities, accelerations):
-        mu, sigma = 0, 1 # mean = 0; variance = 1, i.e., standard deviation = sqrt(var) = 1
+def generator(radn, N, positions, velocities, accelerations):
         for i in prange(N):
-            positions[i] = np.random.normal(mu, sigma, 3)
-            velocities[i] = np.random.normal(mu, sigma, 3)
-            accelerations[i] = np.random.normal(mu, sigma, 3)
+            positions[i, :] = radn[i]
+            velocities[i, :] = radn[i]
+            accelerations[i, :] = radn[i]
             
-        return [positions, velocities, accelerations]
+        return positions, velocities, accelerations
 
 # %%
-def initialRandomParticles(N):
+def initialRandomParticles(radn, N):
         """
         Initial particles
 
@@ -815,9 +780,9 @@ def initialRandomParticles(N):
         mass = total_mass / particles.nparticles # single particel's mass
         
         particles.set_masses((masses * mass))
-        particles.set_positions(generator(N, positions, velocities, accelerations)[0])
-        particles.set_velocities(generator(N, positions, velocities, accelerations)[1])
-        particles.set_accelerations(generator(N, positions, velocities, accelerations)[2])
+        particles.set_positions(generator(radn, N, positions, velocities, accelerations)[0])
+        particles.set_velocities(generator(radn, N, positions, velocities, accelerations)[1])
+        particles.set_accelerations(generator(radn, N, positions, velocities, accelerations)[2])
 
         return particles
 
@@ -827,38 +792,54 @@ def initialRandomParticles(N):
 # %%
 # Initial particles here.
 method = "RK4"
-particles = initialRandomParticles(N = Num)
+particles = initialRandomParticles(radn, N = Num)
 # Run the n-body simulations
 sim = NbodySimulation(particles)
-sim.setup(G=1,method=method,io_freq=200,io_title=problem_name,io_screen=True,visualized=False)
+sim.setup(G=1,method=method
+            ,io_freq=200
+            ,io_title=problem_name
+            ,io_screen=True
+            ,visualized=False)
 Energy_RK4 = sim.evolve(dt=dt,tmax=tmax)
 
 # %%
 # Initial particles here.
 method = "RK2"
-particles = initialRandomParticles(N = Num)
+particles = initialRandomParticles(radn, N = Num)
 # Run the n-body simulations
 sim = NbodySimulation(particles)
-sim.setup(G=1,method=method,io_freq=200,io_title=problem_name,io_screen=True,visualized=False)
+sim.setup(G=1,method=method
+            ,io_freq=200
+            ,io_title=problem_name
+            ,io_screen=True
+            ,visualized=False)
 Energy_RK2 = sim.evolve(dt=dt,tmax=tmax)
 
 # %%
 # Initial particles here.
-method = "Euler"
-particles = initialRandomParticles(N = Num)
+method = "Leapfrog"
+particles = initialRandomParticles(radn, N = Num)
 # Run the n-body simulations
 sim = NbodySimulation(particles)
-sim.setup(G=1,method=method,io_freq=200,io_title=problem_name,io_screen=True,visualized=False)
-Energy_Euler = sim.evolve(dt=dt,tmax=tmax)
+sim.setup(G=1,method=method
+            ,io_freq=200
+            ,io_title=problem_name
+            ,io_screen=True
+            ,visualized=False)
+Energy_LF = sim.evolve(dt=dt,tmax=tmax)
 
 # %%
 # Initial particles here.
-method = "Leapfrog"
-particles = initialRandomParticles(N = Num)
+method = "Euler"
+particles = initialRandomParticles(radn, N = Num)
 # Run the n-body simulations
 sim = NbodySimulation(particles)
-sim.setup(G=1,method=method,io_freq=200,io_title=problem_name,io_screen=True,visualized=False)
-Energy_LF = sim.evolve(dt=dt,tmax=tmax)
+sim.setup(G=1,method=method,
+            io_freq=200,
+            io_title=problem_name,
+            io_screen=True,
+            visualized=False)
+Energy_Euler = sim.evolve(dt=dt,tmax=tmax)
 
 # %%
 TT = len(Energy_RK4[0])
@@ -880,7 +861,7 @@ plt.legend()
 plt.show()
 
 # %%
-Energy_RK4 = Energy_RK2
+Energy_LF = Energy_RK2
 TT = len(Energy_RK4[0])
 Time = np.linspace(0, tmax, len(Energy_RK4[0]))
 Diff_tot = np.abs((Energy_RK4[0] + Energy_RK4[1]) - (Energy_LF[0] + Energy_LF[1]))
@@ -895,12 +876,12 @@ plt.plot(Time, Diff[1], "b", alpha = .3, label = "K")
 plt.plot(Time, Diff_tot, "--r", alpha = .7, label = "tot")
 plt.xlabel("Time [code unit]")
 plt.ylabel("Diff")
-plt.title(f"RK2 vs. Leapfrog (Diff comparison) \n accuracy(log10) = {np.round(accuracy, 5)}")
+plt.title(f"RK4 vs. RK2 (Diff comparison) \n accuracy(log10) = {np.round(accuracy, 5)}")
 plt.legend()
 plt.show()
 
 # %%
-Energy_RK4 = Energy_Euler
+Energy_LF = Energy_Euler
 TT = len(Energy_RK4[0])
 Time = np.linspace(0, tmax, len(Energy_RK4[0]))
 Diff_tot = np.abs((Energy_RK4[0] + Energy_RK4[1]) - (Energy_LF[0] + Energy_LF[1]))
@@ -915,13 +896,136 @@ plt.plot(Time, Diff[1], "b", alpha = .3, label = "K")
 plt.plot(Time, Diff_tot, "--r", alpha = .7, label = "tot")
 plt.xlabel("Time [code unit]")
 plt.ylabel("Diff")
-plt.title(f"Euler vs. Leapfrog (Diff comparison) \n accuracy(log10) = {np.round(accuracy, 5)}")
+plt.title(f"RK4 vs. Euler (Diff comparison) \n accuracy(log10) = {np.round(accuracy, 5)}")
 plt.legend()
 plt.show()
 
+        \end{lstlisting}
 
+    \subsection{{\ttfamily earth\_sun.ipynb}}
+        \begin{lstlisting}[language={Python}]
+# %% [markdown]
+# # Sun-Earth System
+# 
+# In this notebook, we will test our Solar System (Sun + Earth) simulation.\
+# For convenice, that's define the `problem_name` here for handling data IO.
 
-      \end{lstlisting}
+# %%
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from nbody.particles import Particles
+from nbody.simulation import NbodySimulation
 
+# %%
+problem_name = "test"
+
+# %% [markdown]
+# Prepare physical constants
+
+# %%
+msun   = 1.989e33   # gram
+mearth = 5.97219e27 # gram
+au     = 1.496e13   # cm
+day    = 86400      # sec
+year   = 365*day    # sec
+G      = 6.67e-8   # cgs
+
+# %% [markdown]
+# Re-implment the particle initialze condition of the Sun+Earth system. 
+
+# %%
+def initialSolarSystem(particles:Particles):
+    
+    num_part = 2
+    G = 6.67428e-8
+    AU = 1.49598e13
+    mass_earth = 5.97219e27
+    mass_sun = 1.989e33
+    d_earth = AU * (mass_sun / (mass_earth + mass_sun))
+    d_sun = - AU * (mass_earth / (mass_sun + mass_earth))
+    peroid = np.sqrt(4 * np.square(np.pi) * np.power(AU, 3) / (G * (mass_earth + mass_sun)))
+    vel_earth = -2 * np.pi * d_earth / peroid
+    vel_sun = 2 * np.pi * d_sun / peroid
+    acc_earth = -G * mass_earth / np.square(d_earth)
+    acc_sun =  G * mass_sun / np.square(d_sun)
+
+    particles = Particles(N = num_part)
+    
+    masses = particles.get_masses()
+    masses[0, 0] = mass_sun
+    masses[1, 0] = mass_earth
+    
+    positions = particles.get_positions()
+    positions[0, 0] = d_sun
+    positions[1, 0] = d_earth
+    
+    velocities = particles.get_velocities()
+    velocities[0, 1] = vel_sun
+    velocities[1, 1] = vel_earth
+    
+    accelerations = particles.get_accelerations()
+    accelerations[0, 0] = acc_sun
+    accelerations[1, 0] = acc_earth
+    
+    particles.set_masses(masses)
+    particles.set_positions(positions)
+    particles.set_velocities(velocities)
+    particles.set_accelerations(accelerations)
+    
+    return particles
+
+# %% [markdown]
+# Once we initialize the particles, we could run our simulation by
+
+# %%
+particles = Particles(N=2)
+particles = initialSolarSystem(particles)
+sim = NbodySimulation(particles)
+sim.setup(G=G,method="RK4",io_freq=30,io_title=problem_name,io_screen=True,visualized=False)
+sim.evolve(dt=0.1*day,tmax=1*year)
+
+# %% [markdown]
+# # Load data and Visualization
+# 
+# note: `conda install -c conda-forge ffmpeg` might be necessary
+
+# %%
+import glob
+
+# %%
+fns = "data_"+problem_name+"/"+"data_"+problem_name+"_[0-9][0-9][0-9][0-9][0-9].txt"
+fns = glob.glob(fns)
+fns.sort()
+# print(fns)
+
+# %%
+scale = 2 * au
+
+fig, ax =plt.subplots()
+fig.set_size_inches(10.5, 10.5, forward=True)
+fig.set_dpi(72)
+ol,   = ax.plot([0,au],[0,0],'ro',alpha=0.3) # the initial conditions
+line, = ax.plot([],[],'o')                   # plots of particles
+
+def init():
+    ax.set_xlim(-scale,scale)
+    ax.set_ylim(-scale,scale)
+    ax.set_aspect('equal')
+    ax.set_xlabel('X [code unit]')
+    ax.set_ylabel('Y [code unit]')
+    return line,
+
+def updateParticles(frame):
+    fn = fns[frame]
+    m,t,x,y,z,vx,vy,vz,ax,ay,az = np.loadtxt(fn)
+    # print("loadtxt done",fn)
+    line.set_data(x,y)
+    return line,
+
+ani = animation.FuncAnimation(fig, updateParticles, frames=len(fns),init_func=init, blit=True)
+ani.save('movie_'+problem_name+'.gif',fps=10)
+        
+        \end{lstlisting}
 
 \end{document}

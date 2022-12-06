@@ -1,10 +1,10 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.12.1)  4 DEC 2022 23:38
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.12.1)  6 DEC 2022 23:45
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**"/Users/gary/Library/CloudStorage/OneDrive-清華大學/NTHU111fall/Computational Physcics Lab/Homework/HW3/tex/HW3"
-(/Users/gary/Library/CloudStorage/OneDrive-清華大學/NTHU111fall/Computational Physcics Lab/Homework/HW3/tex/HW3.tex
+**"/Users/gary/Library/CloudStorage/OneDrive-清華大學/NTHU111fall/Computational Physcics Lab/Homework/HW3/Comphyslab-HW3/tex/HW3"
+(/Users/gary/Library/CloudStorage/OneDrive-清華大學/NTHU111fall/Computational Physcics Lab/Homework/HW3/Comphyslab-HW3/tex/HW3.tex
 LaTeX2e <2022-11-01>
 L3 programming layer <2022-11-02> (/usr/local/texlive/2022/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2022/07/02 v1.4n Standard LaTeX document class
@@ -1021,18 +1021,18 @@ Requested font "ntxexa" at 6.6pt
  -> /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/newtx/ntxexa.tfm
 Requested font "[lmmono12-regular]:" at 12.0pt
  -> /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/lm/lmmono12-regular.otf
-File: ./RK4/RK4_0.png Graphic file (type bmp)
-<./RK4/RK4_0.png>
-File: ./RK4/RK4_2.png Graphic file (type bmp)
-<./RK4/RK4_2.png>
-File: ./RK4/RK4_4.png Graphic file (type bmp)
-<./RK4/RK4_4.png>
-File: ./RK4/RK4_6.png Graphic file (type bmp)
-<./RK4/RK4_6.png>
-File: ./RK4/RK4_8.png Graphic file (type bmp)
-<./RK4/RK4_8.png>
-File: ./RK4/RK4_10.png Graphic file (type bmp)
-<./RK4/RK4_10.png>
+File: ./RK4/0.png Graphic file (type bmp)
+<./RK4/0.png>
+File: ./RK4/2.png Graphic file (type bmp)
+<./RK4/2.png>
+File: ./RK4/4.png Graphic file (type bmp)
+<./RK4/4.png>
+File: ./RK4/6.png Graphic file (type bmp)
+<./RK4/6.png>
+File: ./RK4/8.png Graphic file (type bmp)
+<./RK4/8.png>
+File: ./RK4/10.png Graphic file (type bmp)
+<./RK4/10.png>
  [1
 
 ]
@@ -1049,64 +1049,57 @@ File: ./LF/8.png Graphic file (type bmp)
 File: ./LF/10.png Graphic file (type bmp)
 <./LF/10.png>
  [2] [3]
-Underfull \hbox (badness 10000) in paragraph at lines 121--124
-
- []
-
-File: RK4_E.png Graphic file (type bmp)
-<RK4_E.png>
-File: RK2_E.png Graphic file (type bmp)
-<RK2_E.png>
-[4]
-File: LF_E.png Graphic file (type bmp)
-<LF_E.png>
-File: Euler_E.png Graphic file (type bmp)
-<Euler_E.png>
+File: ./2body.png Graphic file (type bmp)
+<./2body.png>
+File: ./RK4/part2_no_collision.png Graphic file (type bmp)
+<./RK4/part2_no_collision.png>
+File: ./RK4/part2_collision.png Graphic file (type bmp)
+<./RK4/part2_collision.png>
+ [4]
+File: ./RK4/Energy.png Graphic file (type bmp)
+<./RK4/Energy.png>
+File: ./RK2/Energy.png Graphic file (type bmp)
+<./RK2/Energy.png>
  [5]
-File: RK4_D.png Graphic file (type bmp)
-<RK4_D.png>
+File: ./LF/Energy.png Graphic file (type bmp)
+<./LF/Energy.png>
+File: ./Euler/Energy.png Graphic file (type bmp)
+<./Euler/Energy.png>
+ [6]
+File: ./Compare/LF.png Graphic file (type bmp)
+<./Compare/LF.png>
+File: ./Compare/RK2.png Graphic file (type bmp)
+<./Compare/RK2.png>
+ [7]
+File: ./Compare/Euler.png Graphic file (type bmp)
+<./Compare/Euler.png>
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <14.4> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 169.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 202.
 Requested font "[lmmonolt10-bold]:" at 14.4pt
  -> /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/lm/lmmonolt10-bold.otf
 LaTeX Font Info:    Font shape `TU/TeXGyreTermesX(0)/m/n' will be
-(Font)              scaled to size 10.95pt on input line 170.
+(Font)              scaled to size 10.95pt on input line 203.
 Requested font "[TeXGyreTermesX-Regular.otf]/OT:script=latn;language=dflt;-ss05;+tnum;+lnum;mapping=tex-text;" at 10.95pt
  -> /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/newtx/TeXGyreTermesX-Regular.otf
 Requested font "[lmmono10-regular]:" at 10.95pt
  -> /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/lm/lmmono10-regular.otf
 LaTeX Font Info:    Font shape `TU/TeXGyreTermesX(0)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 171.
+(Font)              scaled to size 6.0pt on input line 204.
 Requested font "[TeXGyreTermesX-Regular.otf]/OT:script=latn;language=dflt;-ss05;+tnum;+lnum;mapping=tex-text;" at 6.0pt
  -> /usr/local/texlive/2022/texmf-dist/fonts/opentype/public/newtx/TeXGyreTermesX-Regular.otf
- [6] [7] [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18]
-Overfull \hbox (56.68555pt too wide) in paragraph at lines 833--834
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][]  
+ [8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22]
+Overfull \hbox (45.18805pt too wide) in paragraph at lines 985--986
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]  
  []
 
-
-Overfull \hbox (56.68555pt too wide) in paragraph at lines 842--843
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (56.68555pt too wide) in paragraph at lines 851--852
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][]  
- []
-
-
-Overfull \hbox (56.68555pt too wide) in paragraph at lines 860--861
-[][][][][][][][][][][][][][][][][][][][][][][][][][][][]  
- []
-
-[19] [20] (./HW3.aux) ) 
+[23] [24] (./HW3.aux) ) 
 Here is how much of TeX's memory you used:
- 34197 strings out of 475644
- 836408 string characters out of 5796303
- 1576697 words of memory out of 5000000
- 54897 multiletter control sequences out of 15000+600000
+ 34276 strings out of 475644
+ 837908 string characters out of 5796303
+ 1560697 words of memory out of 5000000
+ 54978 multiletter control sequences out of 15000+600000
  495685 words of font info for 111 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 99i,6n,117p,1508b,1793s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,6n,117p,1672b,1748s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on HW3.pdf (20 pages).
+Output written on HW3.pdf (24 pages).
