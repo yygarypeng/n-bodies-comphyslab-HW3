@@ -91,6 +91,10 @@ def ACC_norm(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
                 
+                U[i] = - G * mass[i, 0] * mass[j, 0] / r
+                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i]) 
+                              + mass[j, 0] * np.sum(vel_square[j]))
+                
     U = np.sum(U)
     K = np.sum(K)
     
@@ -133,6 +137,9 @@ def ACC_jit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
                 
+                U[i] = - G * mass[i, 0] * mass[j, 0] / r
+                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
+                              + mass[j, 0] * np.sum(vel_square[j, :]))
     U = np.sum(U)
     K = np.sum(K)
     
@@ -159,13 +166,13 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 y = posy[i] - posy[j]
                 z = posz[i] - posz[j]
                 r = np.sqrt(x**2 + y**2 + z**2) + rsoft
-                # theta = np.arccos(z / r)
+                theta = np.arccos(z / r)
                 phi = np.arctan2(y, x)
                 F = - G * mass[i, 0] * mass[j, 0] / np.square(r)
-                Fx = F * np.cos(phi)
-                Fy = F * np.sin(phi)
-                # Fz = F * np.sin(theta)
-                Fz = 0
+                Fx = F * np.cos(phi) * np.sin(theta)
+                Fy = F * np.sin(phi) * np.sin(theta)
+                Fz = F * np.cos(theta)
+                # Fz = 0
 
                 acc[i, 0] += Fx / mass[i, 0]
                 acc[j, 0] -= Fx / mass[j, 0]
@@ -177,8 +184,8 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[j, 2] -= Fz / mass[j, 0]
                 
                 U[i] = - G * mass[i, 0] * mass[j, 0] / r
-                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i]) 
-                              + mass[j, 0] * np.sum(vel_square[j]))
+                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
+                              + mass[j, 0] * np.sum(vel_square[j, :]))
     U = np.sum(U)
     K = np.sum(K)
     
@@ -326,9 +333,10 @@ class NbodySimulation:
             n += 1
         
         T = np.linspace(0, tmax, step)
+        plt.figure(dpi=120)
         plt.plot(T, UU, 'g', alpha = .3, label = 'Potential')
         plt.plot(T, KK, 'b', alpha = .3, label = 'Kinetic')
-        plt.plot(T, EE, '--r', alpha = .7, label = 'Total')
+        plt.plot(T, EE, '--r', alpha = .6, label = 'Total')
         plt.xlabel('Time [code unit]')
         plt.ylabel('Energy [code unit]')
         plt.title(f'Energy Scheme, with {method}')
@@ -374,6 +382,7 @@ class NbodySimulation:
         yder = np.array([vel, acc])
         
         y0 = np.add(y0, yder * dt)
+        acc = self._calculate_acceleration(mass, y0[0])[0]
         
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
@@ -397,6 +406,7 @@ class NbodySimulation:
         acc = self._calculate_acceleration(mass, y_temp[0])[0]
         k2 = np.array([y_temp[1], acc])
         y0 = np.add(y0, (dt / 2) * (k1 + k2))
+        acc = self._calculate_acceleration(mass, y0[0])[0]
         
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
@@ -427,6 +437,7 @@ class NbodySimulation:
         k4 = np.array([y_temp[1], acc])
         
         y0 = np.add(y0, (1/6) * dt * (k1 + 2*k2 + 2*k3 + k4))
+        acc = self._calculate_acceleration(mass, y0[0])[0]
         
         particles.set_positions(y0[0])
         particles.set_velocities(y0[1])
