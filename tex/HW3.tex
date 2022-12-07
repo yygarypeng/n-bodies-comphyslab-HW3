@@ -1,28 +1,24 @@
 \documentclass[12pt]{article}
 
-\usepackage{anyfontsize}
-\usepackage{enumitem}
-\usepackage{physics} 
-\usepackage{enumerate}
-\usepackage{pgfplots}
-\usepackage{pgfplotstable}
-\usepackage{tikz,pgfplots}
-\usepackage{graphicx}
-\usepackage{float}
-\usepackage{subfigure}
-\usepackage[toc,page]{appendix}
-\usepackage{amsmath} %I added this so that you can use the align tool for equations!
+\usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{anyfontsize}
+\usepackage[toc,page]{appendix}
 \usepackage{array}
-\usepackage{tabularx}
-\usepackage{cellspace}
-\usepackage{geometry}
-\usepackage{listings}
-\usepackage{color}
-\usepackage{fontspec}
 \usepackage{booktabs}
-\usepackage{newtxtext,newtxmath}
 \usepackage{caption}
+\usepackage{cellspace}
+\usepackage{color}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{newtxtext,newtxmath}
+\usepackage{listings}
+\usepackage{physics} 
+\usepackage{subfigure}
+\usepackage{tabularx}
 
 \geometry{
     a4paper,
@@ -53,8 +49,7 @@
 \renewcommand\lstlistingname{Algorithm}
 \captionsetup[lstlisting]{singlelinecheck=false, margin=12pt, labelsep=default, labelfont=default}
 %We can also use: labelsep=period or labelsep=spacce, labelfont=default or labelfont=bf
-\pgfplotsset{compat = 1.18}
-%pgfplotsset Version 1.18
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Again, Don't change anything Above %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -65,7 +60,7 @@
                 Homework 3}}
 \author{108000204\\
         Yuan-Yen Peng\\
-        Dept.\ of Physics, NTHU\\
+        Dept. of Physics, NTHU\\
         Hsinchu, Taiwan}
 \date{\today}
 \maketitle
@@ -135,7 +130,7 @@
         \centering 
         \includegraphics[width = 0.45\textwidth]{./RK4/part2_no_collision.png}
         \includegraphics[width = 0.45\textwidth]{./RK4/part2_collision.png} 
-        \caption{This the {\ttfamily nbody} simulation with two particles. The left is non-collision situation; the right happened collide.}
+        \caption{This the {\ttfamily nbody} simulation with two particles. The left is a non-collision situation; the right happened to collide.}
         \label{collision}
     \end{figure}
 
@@ -206,7 +201,7 @@ import numpy as np
 class Particles:
     """
     
-    The Particles class handle all particle properties
+    The Particles class handles all particle properties
 
     for the N-body simulation. 
 
