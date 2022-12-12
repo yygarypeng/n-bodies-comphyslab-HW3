@@ -92,9 +92,9 @@ def ACC_njit(N, posx, posy, posz, G, mass, rsoft, U, K, vel_square):
                 acc[i, 2] += Fz / mass[i, 0]
                 acc[j, 2] -= Fz / mass[j, 0]
                 
-                U[j] = - G * mass[i, 0] * mass[j, 0] / r
-        K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]))
-
+                U[i] = - G * mass[i, 0] * mass[j, 0] / r
+                K[i] = 0.5 * (mass[i, 0] * np.sum(vel_square[i, :]) 
+                              + mass[j, 0] * np.sum(vel_square[j, :]))
     U = np.sum(U)
     K = np.sum(K)
     
